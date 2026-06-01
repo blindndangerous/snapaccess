@@ -50,6 +50,13 @@ public class PlayDeckTrayHandler : IScreenNavigator
         if (Time.time - _lastScanTime < 1.0f) return _isActive;
         _lastScanTime = Time.time;
 
+        // Yield to the deck editor (DeckBuilder) when it is open. The tray and the
+        // editor share the OverlayCanvas root, so without this both navigators claim
+        // the editor screen and ping-pong, forcing the user to press Back twice.
+        var editor = Object.FindObjectOfType<Il2CppCubeUnity.App.Collection.Landscape.DeckCardsView>();
+        if (editor != null && ((Component)editor).gameObject.activeInHierarchy)
+            return false;
+
         GameObject root = GameObject.Find("PlayDeckTrayView_Landscape(Clone)") ?? GameObject.Find("OverlayCanvas");
         if (root == null || !root.activeInHierarchy) return false;
 
