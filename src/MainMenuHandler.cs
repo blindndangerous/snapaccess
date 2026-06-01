@@ -2470,6 +2470,14 @@ public class MainMenuHandler : IScreenNavigator
 			UIHelper.ClickButton(b);
 			AnnouncementService.Instance.AnnounceInterrupt("Editing deck.");
 		}
+		else if (_deckLeftButton != null && ((Component)_deckLeftButton).gameObject.activeInHierarchy)
+		{
+			// The bare Play screen has no edit button — the game only edits a deck
+			// through the deck selector. Open it so the user can pick a deck and
+			// press E to edit, instead of dead-ending on "Edit button not found".
+			UIHelper.ClickButtonWithFallback(_deckLeftButton);
+			AnnouncementService.Instance.Announce(Loc.Get("menu_opening_deck_selector_to_edit"));
+		}
 		else
 		{
 			AnnouncementService.Instance.Announce(Loc.Get("menu_edit_button_not_found"));

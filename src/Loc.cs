@@ -121,6 +121,7 @@ public static class Loc
         _english["menu_reward_not_yet"] = "Not available yet. {0} remaining.";
         _english["menu_reward_not_claimable"] = "This reward cannot be claimed.";
         _english["menu_edit_button_not_found"] = "Edit button not found.";
+        _english["menu_opening_deck_selector_to_edit"] = "Opening deck selector. Choose a deck and press E to edit.";
 
         // Play screen
         _english["play_screen"] = "Play screen.";
