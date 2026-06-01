@@ -2625,18 +2625,26 @@ public class BattlefieldHandler : IScreenNavigator
                 }
             }
 
-            // Fallback 2: Mouse drag simulation (physically drag card to location)
+            // Fallback 2: Mouse drag simulation (physically drag card to location).
+            // This path is fire-and-forget — we can't confirm it actually placed the
+            // card, so its announcement is tentative ("Playing ...") and the delayed
+            // verifier below reports a silent failure if the card stays in hand.
+            bool confirmedPlay = success;
             if (!success)
             {
                 DebugLogger.Log(LogCategory.Handler, "BattlefieldHandler", $"Trying mouse drag: {cardName} -> {locationName}");
                 SimulateDragCardToLocation(_selectedCard, loc);
-                // Mouse drag is fire-and-forget — we'll verify below
                 success = true;
             }
 
             if (success)
             {
-                AnnouncementService.Instance.Announce(Loc.Get("bf_card_played", cardName, locationName), AnnouncementPriority.Immediate);
+                // Only claim "Played" when a real game API confirmed the placement;
+                // the unverified mouse-drag fallback announces "Playing" instead.
+                string playedMsg = confirmedPlay
+                    ? Loc.Get("bf_card_played", cardName, locationName)
+                    : Loc.Get("bf_card_playing", cardName, locationName);
+                AnnouncementService.Instance.Announce(playedMsg, AnnouncementPriority.Immediate);
                 // Track for rollback detection
                 try { _lastPlayedEntityId = _selectedCard.EntityId; } catch { }
                 _lastPlayedCardName = cardName;

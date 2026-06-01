@@ -13,6 +13,8 @@
 - **Turn-start announcement** spoke a stray "less-than" every turn ("Turn 2&lt;, energy 2, go") from turn 2 on. The turn-counter label is TMP rich text like "&lt;size=490&gt;2&lt;/size&gt; / 6", and the code split it on '/', which cut through the closing "&lt;/size&gt;" tag. Markup is now stripped before the number is parsed.
 - **Turn announcement repeated within a turn.** The battlefield detects turn changes by watching the hand count, but playing a card also changes the hand count, so the full "Turn N, energy X, go" line was re-spoken after each play (heard as "Turn 3, energy 1, go" then "Turn 3, energy 0, go"). A turn is now announced once, when its number actually changes.
 
+- **False "Played" announcement on uncertain plays.** When the reliable play APIs failed and the mod fell back to a simulated mouse drag (which it cannot confirm), it announced "Played X to Y" up front, then often corrected with "X could not be played". The fallback now announces a tentative "Playing X to Y", and the existing delayed check still reports a silent failure if the card stays in hand.
+
 ### Changed
 - `AnnouncementService` now takes an injectable speech-output seam and clock instead of calling the screen-reader bridge and the system clock directly. Behavior is unchanged; the two identical High/Immediate branches were collapsed into one.
 

@@ -178,6 +178,7 @@ public static class Loc
         _english["bf_card_deselected"] = "{0} deselected.";
         _english["bf_choose_location"] = "Choose location for {0}.";
         _english["bf_card_played"] = "Played {0} to {1}.";
+        _english["bf_card_playing"] = "Playing {0} to {1}.";
         _english["bf_play_failed"] = "Could not play {0} to {1}.";
         _english["bf_play_error"] = "Play failed.";
         _english["bf_play_rolled_back"] = "{0} was returned to hand.";
