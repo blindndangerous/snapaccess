@@ -95,11 +95,16 @@ public class Main : MelonMod
         // Input field helper tracks focused text fields for character announcements
         _inputFieldHelper.Update();
 
-        if (ProcessGlobalHotkeys()) return;
+        // While a text input field is focused, let typed keys reach the field instead
+        // of triggering mod shortcuts. Without this, typing a name containing "O" opens
+        // the game log, and other letter/function hotkeys get swallowed while typing.
+        bool editingText = _inputFieldHelper.IsEditing;
+
+        if (!editingText && ProcessGlobalHotkeys()) return;
 
         // Game log captures all input when active
         if (_modSettings.HandleInput()) return;
-        if (_gameLog.HandleInput()) return;
+        if (!editingText && _gameLog.HandleInput()) return;
 
         if (_gameReady)
         {
