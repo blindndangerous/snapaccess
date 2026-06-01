@@ -35,6 +35,7 @@
     <Compile Include="..\..\src\AnnouncementService.cs" Link="Linked\AnnouncementService.cs" />
     <Compile Include="..\..\src\TurnTextParser.cs" Link="Linked\TurnTextParser.cs" />
     <Compile Include="..\..\src\TurnAnnounceGate.cs" Link="Linked\TurnAnnounceGate.cs" />
+    <Compile Include="..\..\src\TurnTimerWarning.cs" Link="Linked\TurnTimerWarning.cs" />
   </ItemGroup>
 
 </Project>

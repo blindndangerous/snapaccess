@@ -128,8 +128,7 @@ public class BattlefieldHandler : IScreenNavigator
     // Turn timer warning: announce once when timer is running low
     private bool _timerWarningAnnounced = false;
     private TurnTimer _turnTimer;
-    private bool _turnTimerWarningFired = false; // Via TurnTimer component (not tooltip)
-    private bool _turnTimerUrgentFired = false;
+    private readonly TurnTimerWarning _timerWarning = new TurnTimerWarning(); // Via TurnTimer component (not tooltip)
     private float _lastTimerCheck = 0f;
 
     // Retreat confirmation: require double-press R within timeout
@@ -298,8 +297,7 @@ public class BattlefieldHandler : IScreenNavigator
         _lastTurnPhaseCheck = 0f;
         _timerWarningAnnounced = false;
         _turnTimer = null;
-        _turnTimerWarningFired = false;
-        _turnTimerUrgentFired = false;
+        _timerWarning.Reset();
         _endTurnGuardPending = false;
     }
 
@@ -812,8 +810,7 @@ public class BattlefieldHandler : IScreenNavigator
                     _lastLocString = "";
                     _turnChangeCount++;
                     _timerWarningAnnounced = false;
-                    _turnTimerWarningFired = false;
-                    _turnTimerUrgentFired = false;
+                    _timerWarning.Reset();
                     _deferredDrawnCardsMessage = null;
                     // Cooldown: wait for card reveal animations to finish before scanning for opponent plays.
                     // Cards fly/animate for ~3-5 seconds during the reveal phase.
@@ -3936,26 +3933,15 @@ public class BattlefieldHandler : IScreenNavigator
             if (!timer._Active_k__BackingField || timer._noTimer) return;
             float remaining = timer.GetRemainingTime();
 
-            // Warning at 15 seconds
-            if (!_turnTimerWarningFired && remaining <= 15f && remaining > 0f)
+            int secs = (int)remaining;
+            switch (_timerWarning.Evaluate(remaining))
             {
-                _turnTimerWarningFired = true;
-                int secs = (int)remaining;
-                AnnouncementService.Instance.Announce(Loc.Get("bf_timer_warning", secs.ToString()), AnnouncementPriority.Immediate);
-            }
-            // Urgent at 5 seconds
-            else if (!_turnTimerUrgentFired && remaining <= 5f && remaining > 0f)
-            {
-                _turnTimerUrgentFired = true;
-                int secs = (int)remaining;
-                AnnouncementService.Instance.Announce(Loc.Get("bf_timer_urgent", secs.ToString()), AnnouncementPriority.Critical);
-            }
-
-            // Reset when timer goes back up (new turn started)
-            if (remaining > 20f)
-            {
-                _turnTimerWarningFired = false;
-                _turnTimerUrgentFired = false;
+                case TurnTimerWarningLevel.Warning:
+                    AnnouncementService.Instance.Announce(Loc.Get("bf_timer_warning", secs.ToString()), AnnouncementPriority.Immediate);
+                    break;
+                case TurnTimerWarningLevel.Urgent:
+                    AnnouncementService.Instance.Announce(Loc.Get("bf_timer_urgent", secs.ToString()), AnnouncementPriority.Critical);
+                    break;
             }
         }
         catch (Exception ex)
