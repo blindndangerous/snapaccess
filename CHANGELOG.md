@@ -14,6 +14,7 @@
 - **Mod hotkeys stole keystrokes while typing in a text field.** Letters bound to shortcuts triggered the shortcut instead of typing; for example, typing a name containing "O" opened the game log. Mod hotkeys and the game-log key are now suppressed while a text input field is focused.
 - **Turn announcement repeated within a turn.** The battlefield detects turn changes by watching the hand count, but playing a card also changes the hand count, so the full "Turn N, energy X, go" line was re-spoken after each play (heard as "Turn 3, energy 1, go" then "Turn 3, energy 0, go"). A turn is now announced once, when its number actually changes.
 
+- **Auto-Deck editor could not be exited by keyboard.** The deck editor's back button (`btn_hex_prp` under `Escape_BackButton`, the game's generic back button) wasn't in the close-button search, so the mod simulated Escape, which didn't close it, and the user was trapped (force-quit required). The real back button is now searched first.
 - **False "Played" announcement on uncertain plays.** When the reliable play APIs failed and the mod fell back to a simulated mouse drag (which it cannot confirm), it announced "Played X to Y" up front, then often corrected with "X could not be played". The fallback now announces a tentative "Playing X to Y", and the existing delayed check still reports a silent failure if the card stays in hand.
 
 ### Changed

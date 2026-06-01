@@ -816,7 +816,11 @@ public class DeckBuilderHandler : IScreenNavigator
     {
         try
         {
-            Button closeBtn = FindButtonByNames("btn_back", "BackButton", "btn_close", "CloseButton");
+            // btn_hex_prp (under "Escape_BackButton", label "Esc") is the game's generic
+            // back/close button, seen on the deck tray and popups. The Auto-Deck editor's
+            // close wasn't matched by the old names, so Escape was simulated and failed,
+            // trapping the user. Search the hex back button first.
+            Button closeBtn = FindButtonByNames("btn_hex_prp", "Escape_BackButton", "btn_back", "BackButton", "btn_close", "CloseButton");
             if (closeBtn != null)
             {
                 UIHelper.ClickButton(closeBtn);
