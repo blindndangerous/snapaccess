@@ -125,29 +125,51 @@ public class DeckBuilderHandler : IScreenNavigator
             // The deck editor is open when DeckListCardSlotView components exist and are active.
             // CollectionDeckDetailsView.IsShowing() can be true in view mode too (false positive).
             // So we require actual deck slot views to confirm we're in edit mode.
+            // Portrait deck editor: DeckListCardSlotView slots.
             Il2CppArrayBase<DeckListCardSlotView> slotViews = Object.FindObjectsOfType<DeckListCardSlotView>();
-            if (slotViews == null || slotViews.Length == 0) return false;
-
-            // Verify at least one slot is active in the hierarchy
             bool hasActiveSlot = false;
-            for (int i = 0; i < slotViews.Length; i++)
+            if (slotViews != null)
             {
-                if (slotViews[i] != null && ((Component)slotViews[i]).gameObject.activeInHierarchy)
+                for (int i = 0; i < slotViews.Length; i++)
                 {
-                    hasActiveSlot = true;
-                    break;
+                    if (slotViews[i] != null && ((Component)slotViews[i]).gameObject.activeInHierarchy)
+                    {
+                        hasActiveSlot = true;
+                        break;
+                    }
                 }
             }
-            if (!hasActiveSlot) return false;
+
+            // Landscape collection deck editor uses a different view type
+            // (Landscape.DeckCardsView) with LandscapeCollectionCardView slots.
+            // Without detecting it, this navigator never activated on that screen,
+            // leaving MainMenu in control and trapping the user in the editor with
+            // no way to close it.
+            GameObject landscapeRoot = null;
+            if (!hasActiveSlot)
+            {
+                var landscapeDeck = Object.FindObjectOfType<Il2CppCubeUnity.App.Collection.Landscape.DeckCardsView>();
+                if (landscapeDeck != null && ((Component)landscapeDeck).gameObject.activeInHierarchy)
+                    landscapeRoot = ((Component)landscapeDeck).gameObject;
+            }
+
+            if (!hasActiveSlot && landscapeRoot == null) return false;
 
             // Find the editor root for deck name reading
             if (_editorRoot == null)
             {
-                var detailsView = Object.FindObjectOfType<Il2CppCubeUnity.App.Collection.CollectionDeckDetailsView>();
-                if (detailsView != null && ((Component)detailsView).gameObject.activeInHierarchy)
-                    _editorRoot = ((Component)detailsView).gameObject;
+                if (hasActiveSlot)
+                {
+                    var detailsView = Object.FindObjectOfType<Il2CppCubeUnity.App.Collection.CollectionDeckDetailsView>();
+                    if (detailsView != null && ((Component)detailsView).gameObject.activeInHierarchy)
+                        _editorRoot = ((Component)detailsView).gameObject;
+                    else
+                        _editorRoot = ((Component)slotViews[0]).gameObject;
+                }
                 else
-                    _editorRoot = ((Component)slotViews[0]).gameObject;
+                {
+                    _editorRoot = landscapeRoot;
+                }
             }
 
             ScanDeckCards();
